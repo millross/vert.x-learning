@@ -23,7 +23,7 @@ def createRouteMatcher = {
     }
 
     rm.post("/customer/create") { req ->
-        vertx.getEventBus.send("customer.create") {
+        vertx.getEventBus().send("customer.create", "test") { reply ->
             req.response.end reply.body
         }
     }
