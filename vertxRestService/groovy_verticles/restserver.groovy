@@ -1,3 +1,4 @@
+import org.vertx.groovy.core.buffer.Buffer
 import org.vertx.groovy.core.http.RouteMatcher
 
 def console = container.logger
@@ -23,8 +24,12 @@ def createRouteMatcher = {
     }
 
     rm.post("/customer/create") { req ->
-        vertx.getEventBus().send("customer.create", "test") { reply ->
-            req.response.end reply.body
+        def body = new Buffer(0)
+        req.bodyHandler {buffer ->
+            body << buffer
+            vertx.getEventBus().send("customer.create", body) { reply ->
+                req.response.end reply.body.toString()
+            }
         }
     }
 

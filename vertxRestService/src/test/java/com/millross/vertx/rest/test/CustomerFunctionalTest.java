@@ -1,13 +1,16 @@
 package com.millross.vertx.rest.test;
 
-import org.vertx.java.core.buffer.Buffer;
-import org.vertx.java.core.http.HttpClientRequest;
 import org.junit.Test;
 import org.vertx.java.core.Handler;
+import org.vertx.java.core.buffer.Buffer;
 import org.vertx.java.core.http.HttpClient;
+import org.vertx.java.core.http.HttpClientRequest;
 import org.vertx.java.core.http.HttpClientResponse;
+import org.vertx.java.core.json.JsonObject;
 import org.vertx.java.framework.TestBase;
 
+import java.util.HashMap;
+import java.util.Map;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
 
@@ -47,7 +50,7 @@ public class CustomerFunctionalTest extends TestBase {
 
         request.setChunked(true);
         request.headers().put("Accept", "application/json");
-        request.write("Test1");
+        request.write(new JsonObject(createCustomerMap()).toString());
         request.end();
 
         request = client.get("/customer/1", new Handler<HttpClientResponse>() {
@@ -68,5 +71,13 @@ public class CustomerFunctionalTest extends TestBase {
 
         done.await(1000, TimeUnit.MILLISECONDS);
         System.out.println("About to stop app");
+    }
+
+    private Map createCustomerMap() {
+        Map customerMap = new HashMap();
+        customerMap.put("name", "Joe Dolce");
+        customerMap.put("address", "6500 Warwick Avenue");
+        customerMap.put("status", "elevated");
+        return customerMap;
     }
 }
