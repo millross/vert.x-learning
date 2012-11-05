@@ -3,12 +3,6 @@ import org.vertx.groovy.core.http.RouteMatcher
 
 def console = container.logger
 
-def appConfig = [
-        customerConfig: [test: "testVal"],
-        routingConfig: [[path: "/details/:user/:id", type: "get", address: "test.address"],
-                        [path:  "details/user", type: "post", address:  "test.post.address"]]
-]
-
 // Can we set something clever up so routing becomes part of config and we route based on the URL to an event
 // bus address via a simple mapping, but always do the same thing?
 // Need to add params from the url to some kind of nvp mapping, and also the request body, then generate a message
@@ -40,4 +34,3 @@ def createRouteMatcher = {
 vertx.createHttpServer().requestHandler (createRouteMatcher().asClosure()
 ).listen(8080, "localhost")
 
-container.deployVerticle("customer.groovy", appConfig["customerConfig"])
