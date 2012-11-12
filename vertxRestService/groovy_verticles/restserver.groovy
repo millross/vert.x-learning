@@ -1,3 +1,4 @@
+import groovy.json.JsonSlurper
 import org.vertx.groovy.core.buffer.Buffer
 import org.vertx.groovy.core.http.RouteMatcher
 
@@ -18,15 +19,13 @@ def createRouteMatcher = {
     }
 
     rm.post("/customer/create") { req ->
-        def body = new Buffer(0)
         req.bodyHandler {buffer ->
-            body << buffer
-            vertx.getEventBus().send("customer.create", body) { reply ->
-                req.response.end reply.body.toString()
+            def custObj = new JsonSlurper().parseText(buffer.toString())
+            vertx.getEventBus().send("customer.create", custObj) { reply ->
+                req.response.end reply.body.id
             }
         }
     }
-
 
     return rm
 }

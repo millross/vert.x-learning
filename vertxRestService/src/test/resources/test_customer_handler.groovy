@@ -2,17 +2,22 @@
  * Dummy handler for customer routing (assumption is that server requests write to the event bus). We will write back
  * standard data. We'll just use a local map to spoof a database (can I dummy a persistor?)
  */
-import org.vertx.groovy.core.buffer.Buffer
+
+import static java.util.UUID.randomUUID
+import static java.util.UUID.fromString
 
 def localCache = [:]
 
 vertx.getEventBus().registerHandler("customer.get", { message ->
-    x = localCache.get("Hello")
-    message.reply([response: x].toString())
+    x = localCache.get(fromString(message.body))
+    message.reply(x.toString())
 })
 
 vertx.getEventBus().registerHandler("customer.create", { message ->
-    println(message.getBody().toString());
-    localCache.put("Hello", "Test1")
-    message.reply(new Buffer("Customer created"))
+    def custObject = message.getBody()
+    def custId = randomUUID()
+    custObject.id = custId
+    // convert message body into a customer object, or at least a json object
+    localCache.put(custId, custObject)
+    message.reply([id: custId])
 })
