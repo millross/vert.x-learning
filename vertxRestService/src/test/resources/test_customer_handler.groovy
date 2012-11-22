@@ -3,8 +3,8 @@
  * standard data. We'll just use a local map to spoof a database (can I dummy a persistor?)
  */
 
-import static java.util.UUID.randomUUID
 import static java.util.UUID.fromString
+import static java.util.UUID.randomUUID
 
 def localCache = [:]
 
@@ -20,4 +20,9 @@ vertx.getEventBus().registerHandler("customer.create", { message ->
     // convert message body into a customer object, or at least a json object
     localCache.put(custId, custObject)
     message.reply([id: custId])
+})
+
+vertx.getEventBus().registerHandler("customer.delete", { message ->
+    def custId = message.getBody()
+    localCache.remove(custId)
 })

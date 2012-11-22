@@ -1,8 +1,5 @@
 import groovy.json.JsonSlurper
-import org.vertx.groovy.core.buffer.Buffer
 import org.vertx.groovy.core.http.RouteMatcher
-
-def console = container.logger
 
 // Can we set something clever up so routing becomes part of config and we route based on the URL to an event
 // bus address via a simple mapping, but always do the same thing?
@@ -22,6 +19,22 @@ def createRouteMatcher = {
         req.bodyHandler {buffer ->
             def custObj = new JsonSlurper().parseText(buffer.toString())
             vertx.getEventBus().send("customer.create", custObj) { reply ->
+                req.response.end reply.body.id
+            }
+        }
+    }
+
+    rm.delete('/customer/:id') { req ->
+        vertx.getEventBus().send("customer.delete", req.params["id"], { reply ->
+            req.response.end reply.body
+        })
+    }
+
+    rm.put('/customer/:id') { req ->
+        req.bodyHandler {buffer ->
+            def custObj = new JsonSlurper().parseText(buffer.toString())
+            custObj["id"] = req.params["id"]
+            vertx.getEventBus().send("customer.put", custObj) { reply ->
                 req.response.end reply.body.id
             }
         }
