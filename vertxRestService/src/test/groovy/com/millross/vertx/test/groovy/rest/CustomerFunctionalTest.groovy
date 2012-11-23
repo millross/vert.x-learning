@@ -1,4 +1,4 @@
-package com.millross.vertx.rest.test
+package com.millross.vertx.test.groovy.rest
 
 import org.vertx.java.core.json.JsonObject
 
@@ -7,10 +7,10 @@ import java.util.concurrent.TimeUnit
 
 /**
  */
-class DemoGroovyTest extends GroovyTestBase {
+class CustomerFunctionalTest extends GroovyTestBase {
 
     void test() {
-        startApp("test_restserver.js", 1);
+        startApp("test_restserver.groovy", 1);
         println 'App started'
 
         def client = vertx.createHttpClient().setHost("localhost").setPort(8080);
@@ -33,7 +33,6 @@ class DemoGroovyTest extends GroovyTestBase {
 
         done.await(1000, TimeUnit.MILLISECONDS);
         System.out.println("About to stop app");
-
 
     }
 

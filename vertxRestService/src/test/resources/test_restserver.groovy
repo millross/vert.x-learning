@@ -1,14 +1,17 @@
-import org.vertx.java.framework.TestUtils
+import org.vertx.groovy.deploy.Container
+import org.vertx.groovy.framework.TestUtils
+import org.vertx.java.deploy.impl.VertxLocator
 
-def eb = vertx.eventBus
-def tu = new TestUtils()
+tu = new TestUtils(vertx) // Need this effectively globally scoped so we can call it from vertxStop()
 
-vertx.deployVerticle("restserver.groovy", null, 1, function() {tu.appReady()})
+// Need reference to container for deployment of verticles
+def container = new Container(VertxLocator.container)
 
-// Register a handler which will respond to customer requests with dummy data
-eb.registerHandler()
+container.deployVerticle("restserver.groovy", null)
+container.deployVerticle("test_customer_handler.groovy", null, 1) {tu.appReady()}
 
-def vertxStop = {
+def vertxStop() {
     tu.unregisterAll()
     tu.appStopped()
 }
+
