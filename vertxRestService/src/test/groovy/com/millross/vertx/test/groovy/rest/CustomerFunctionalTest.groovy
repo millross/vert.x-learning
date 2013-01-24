@@ -10,17 +10,14 @@ import java.util.concurrent.TimeUnit
 class CustomerFunctionalTest extends GroovyTestBase {
 
     void test() {
-        startApp("test_restserver.groovy", 1);
-        println 'App started'
+        startApp("test_restserver.groovy", 1)
 
         def client = vertx.createHttpClient().setHost("localhost").setPort(8080);
         def done = new CountDownLatch(2);
 
         def request = client.post("/customer/create") {resp ->
-            println(resp.statusCode)
             resp.bodyHandler {buffer ->
                 String custId = buffer.toString()
-                println ("Customer id = " + custId)
                 getCustomerWithId(client, done, custId);
             }
             done.countDown();
@@ -32,16 +29,15 @@ class CustomerFunctionalTest extends GroovyTestBase {
         request.end();
 
         done.await(1000, TimeUnit.MILLISECONDS);
-        System.out.println("About to stop app");
 
     }
 
     void getCustomerWithId(client, done, id) {
-        println("Get: Customer id = " + id);
         def request = client.get("/customer/" + id) { resp ->
-            println(resp.statusCode);
             resp.bodyHandler { buffer ->
                 println("Response body is " + buffer.toString());
+                def expectedCustomerMap = createCustomerMap()
+                //assert expectedCustomerMap("name") == buffer.toJson().name;
             }
             done.countDown();
         }

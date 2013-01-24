@@ -3,6 +3,9 @@
  * standard data. We'll just use a local map to spoof a database (can I dummy a persistor?)
  */
 
+
+import groovy.json.JsonBuilder
+
 import static java.util.UUID.fromString
 import static java.util.UUID.randomUUID
 
@@ -10,7 +13,8 @@ def localCache = [:]
 
 vertx.getEventBus().registerHandler("customer.get", { message ->
     x = localCache.get(fromString(message.body))
-    message.reply(x.toString())
+    def json = new JsonBuilder(x)
+    message.reply(json.toString())
 })
 
 vertx.getEventBus().registerHandler("customer.create", { message ->
